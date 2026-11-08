@@ -1,0 +1,129 @@
+# sonoff-neway-automacoes
+
+Nós para o Node-RED que controlam aparelhos Sonoff com o firmware original da eWeLink: interruptores, tomadas, relés e outros. Funcionam pela **rede local** (estado por anúncio mDNS, comandos por HTTP direto ao aparelho), pela **nuvem da eWeLink**, ou pelos dois (modo Automático). O login é só com e-mail e senha da conta eWeLink, como a integração SonoffLAN do Home Assistant.
+
+Neway Automações.
+
+Aviso: este pacote usa o mesmo acesso de aplicativo que o SonoffLAN usa. Não é uma API pública com garantia. Logar na nuvem com o mesmo usuário em outro lugar (por exemplo, no Home Assistant) pode derrubar a outra sessão.
+
+Dependências: `bonjour-service` e `ws` (instaladas junto com o pacote).
+
+## O que vem no pacote
+
+Na paleta, no grupo **sonoff neway automacoes**, aparece um nó:
+
+- **Sonoff**: lê o estado, consulta e envia comandos a um aparelho.
+
+A conta eWeLink não aparece na paleta, porque é um nó de configuração. Ela é criada de dentro do nó **Sonoff** (campo **Conta**, botão do lápis) e fica listada no menu, em **Configuration nodes**.
+
+## Instalar
+
+A instalação é feita dentro do próprio Node-RED.
+
+1. Baixe o arquivo `.tgz` deste repositório.
+2. No Node-RED, abra o menu (três barras), **Gerenciar paleta**, aba **Instalar**, e envie o arquivo `.tgz` (botão de enviar/upload).
+3. Confirme a instalação. Na paleta aparece o grupo **sonoff neway automacoes**. Se não aparecer, reinicie o Node-RED.
+
+## Conta (feita uma vez)
+
+1. Arraste um nó **Sonoff** para o fluxo, dê duplo clique e, no campo **Conta**, clique no lápis.
+2. Preencha:
+
+| Campo | O que é |
+|---|---|
+| Nome | qualquer nome, só para você reconhecer |
+| E-mail/telefone | o da sua conta eWeLink |
+| Senha | a da sua conta eWeLink |
+| Código do país | por exemplo `+55` |
+| Modo | Automático, Local ou Nuvem |
+
+3. Faça o **Deploy**. A etiqueta da conta mostra `N/M online` quando está funcionando.
+
+O botão **Atualizar lista** refaz o login e baixa a lista de aparelhos de novo. A sessão fica salva e é reaproveitada: reiniciar o Node-RED não refaz o login.
+
+### Modos
+
+- **Automático**: usa a rede local quando o aparelho é encontrado e a nuvem nos outros casos. Os comandos vão primeiro pela rede local e caem para a nuvem se falharem.
+- **Local**: só rede local (mDNS). Não precisa de internet para controlar.
+- **Nuvem**: só a nuvem da eWeLink. Serve para aparelhos que estão em outra rede.
+
+Um aparelho conta como online se estiver online pela rede local ou pela nuvem.
+
+## Usar o nó Sonoff
+
+Escolha:
+
+- **Conta:** a conta criada acima.
+- **Tipo:** define as portas do nó.
+- **Dispositivo:** a lista traz os aparelhos da conta (com "- offline" quando não estão ativos).
+- **Código:** opcional. O ponto de dados do aparelho (por exemplo `switch`, `switch_1`). Em "Todos os códigos", o nó trata todos.
+
+### Tipo: Status (só saída)
+
+Emite uma mensagem por código que mudou, em tempo real. Com **Emitir ao iniciar**, o estado atual sai assim que a conta carrega.
+
+| Campo | Conteúdo |
+|---|---|
+| `msg.payload` | o valor (`true`/`false`, número ou texto) |
+| `msg.topic` | o código (ex.: `switch_1`) |
+| `msg.device` | id do aparelho |
+| `msg.name` | nome do aparelho |
+| `msg.status` | todos os códigos e valores atuais |
+
+### Tipo: Leitura (entrada e saída)
+
+Qualquer mensagem na entrada consulta o aparelho e devolve na saída o valor atual do código escolhido (ou de todos), mantendo as propriedades da mensagem de entrada. Com o aparelho offline, dá erro e nada sai.
+
+### Tipo: Comando (só entrada, sem saída)
+
+Envia o comando ao aparelho.
+
+- **Com um Código escolhido:** `msg.payload` é o valor. `ON`, `true` e `1` ligam; `OFF`, `false` e `0` desligam.
+- **Com o Código em "Todos":** o código vem de `msg.topic` e o valor de `msg.payload`, ou `msg.payload` é um objeto como `{"switch_1": true}`.
+- **Comando bruto:** `msg.zeroconf = {comando: "pulse", dados: {pulse: "on", pulseWidth: 1000}}` envia qualquer comando do protocolo local.
+
+A etiqueta do nó mostra `código=valor` (verde quando verdadeiro), `offline`, `sem chave` (aparelho cifrado sem chave) ou o erro em vermelho.
+
+### Códigos
+
+| Campo do aparelho | Código no nó |
+|---|---|
+| `switch` (`on`/`off`) | `switch` (verdadeiro/falso) |
+| `switches` (vários canais) | `switch_0`, `switch_1`, ... |
+| qualquer outro (`power`, `voltage`, `current`, `rssi`...) | o mesmo nome, valor como veio |
+
+## Rede local dentro de container
+
+Os modos Automático e Local descobrem os aparelhos por mDNS (multicast). Se o Node-RED roda em container Docker, o multicast só chega com rede do tipo **host** (ou macvlan). Em rede bridge o mDNS não funciona; use o modo Nuvem.
+
+## Problemas comuns
+
+| Sintoma | O que fazer |
+|---|---|
+| Todos os aparelhos aparecem offline | o Node-RED está em outra rede que os aparelhos: use o modo Nuvem |
+| Lista de aparelhos vazia | conferir e-mail, senha e país; clicar em **Atualizar lista** |
+| Em modo Nuvem a sessão cai (erro 406) | a mesma conta está logada em outro lugar com o mesmo acesso; clicar em **Atualizar lista** |
+| Editor mostra o nó como era antes da atualização | reiniciar o Node-RED |
+
+## Atualizar
+
+Baixe o `.tgz` atual e instale do mesmo jeito (Gerenciar paleta, Instalar, enviar o arquivo). Se a atualização mudar os campos do nó, reinicie o Node-RED.
+
+## Desinstalar
+
+Antes de remover o pacote, apague tudo que o usa:
+
+1. Apague **todos os nós Sonoff** de todos os fluxos.
+2. Apague a **conta Sonoff salva**: menu, **Configuration nodes**, escolha a conta e exclua.
+3. Faça o **Deploy**.
+4. Menu, **Gerenciar paleta**, aba **Nós**, ache `sonoff-neway-automacoes` e clique em **Remover**.
+
+## Segurança
+
+A senha fica nas credenciais criptografadas do Node-RED. A lista de aparelhos, com as chaves de cada um, fica em um arquivo `sonoff_dispositivos_<id>.json` na pasta de dados. Quem tem acesso à sua pasta de dados ou ao editor do Node-RED consegue controlar seus aparelhos. Proteja o administrador do Node-RED com senha se ele estiver exposto na rede.
+
+## Limites conhecidos
+
+- Os comandos pela nuvem usam a API REST da eWeLink.
+- Medidores de potência, RF Bridge e cortinas mostram o estado como o aparelho envia, sem tratamento próprio.
+- Valores como `power` e `voltage` saem sem conversão de escala.
