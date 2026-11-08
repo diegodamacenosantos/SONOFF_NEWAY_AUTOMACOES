@@ -32,10 +32,10 @@ A instalação é feita dentro do próprio Node-RED.
 | Campo | O que é |
 |---|---|
 | Nome | qualquer nome, só para você reconhecer |
-| E-mail/telefone | o da sua conta eWeLink |
-| Senha | a da sua conta eWeLink |
-| Código do país | por exemplo `+55` |
-| Modo | Automático, Local ou Nuvem |
+| E-mail eWeLink | o e-mail (ou telefone) da sua conta no app eWeLink; serve só para entrar na eWeLink |
+| Senha | a senha da sua conta eWeLink; fica guardada de forma criptografada no Node-RED |
+| Código do país | o código do seu país com `+`, por exemplo `+55` para o Brasil; a região da nuvem é descoberta sozinha |
+| Modo | como o nó fala com os aparelhos: Automático, Local ou Nuvem (explicado abaixo) |
 
 3. Faça o **Deploy**. A etiqueta da conta mostra `N/M online` quando está funcionando.
 
@@ -51,12 +51,14 @@ Um aparelho conta como online se estiver online pela rede local ou pela nuvem.
 
 ## Usar o nó Sonoff
 
-Escolha:
-
-- **Conta:** a conta criada acima.
-- **Tipo:** define as portas do nó.
-- **Dispositivo:** a lista traz os aparelhos da conta (com "- offline" quando não estão ativos).
-- **Código:** opcional. O ponto de dados do aparelho (por exemplo `switch`, `switch_1`). Em "Todos os códigos", o nó trata todos.
+| Campo | O que faz |
+|---|---|
+| Nome | só um rótulo para você reconhecer o nó no fluxo (opcional) |
+| Conta | a conta eWeLink criada acima |
+| Tipo | define o que o nó faz e quais portas tem: Status, Leitura ou Comando (explicados abaixo) |
+| Dispositivo | o aparelho, escolhido numa lista com os aparelhos da conta ("- offline" aparece nos que não estão ativos) |
+| Código | opcional. O ponto de dados do aparelho a usar (por exemplo `switch`, `switch_1`). A lista mostra os códigos do aparelho escolhido. Em "Todos os códigos", o nó trata todos |
+| Emitir ao iniciar | só no tipo Status. Marcado: assim que a conta carrega, o estado atual sai uma vez, sem esperar uma mudança |
 
 ### Tipo: Status (só saída)
 
