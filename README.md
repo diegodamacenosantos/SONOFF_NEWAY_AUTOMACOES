@@ -39,12 +39,12 @@ A instalação é feita dentro do próprio Node-RED.
 
 3. Faça o **Deploy**. A etiqueta da conta mostra `N/M online` quando está funcionando.
 
-O botão **Atualizar lista** refaz o login e baixa a lista de aparelhos de novo. A sessão fica salva e é reaproveitada: reiniciar o Node-RED não refaz o login.
+Na conta também há o botão **Atualizar lista** (campo "Nuvem"). Ele refaz o login e baixa a lista de aparelhos de novo. A sessão fica salva e é reaproveitada: reiniciar o Node-RED não refaz o login.
 
 ### Modos
 
 - **Automático**: usa a rede local quando o aparelho é encontrado e a nuvem nos outros casos. Os comandos vão primeiro pela rede local e caem para a nuvem se falharem.
-- **Local**: só rede local (mDNS). Não precisa de internet para controlar.
+- **Local**: só rede local (mDNS). Não precisa de internet para controlar, mas a lista de aparelhos e as chaves vêm da nuvem: o primeiro login e o botão **Atualizar lista** precisam de internet.
 - **Nuvem**: só a nuvem da eWeLink. Serve para aparelhos que estão em outra rede.
 
 Um aparelho conta como online se estiver online pela rede local ou pela nuvem.
