@@ -10,7 +10,7 @@ Dependências: `bonjour-service` e `ws` (instaladas junto com o pacote).
 
 ## O que vem no pacote
 
-Na paleta, no grupo **sonoff neway automacoes**, aparece um nó:
+Na paleta, no grupo **sonoff-neway-automacoes**, aparece um nó:
 
 - **Sonoff**: lê o estado, consulta e envia comandos a um aparelho.
 
@@ -22,7 +22,7 @@ A instalação é feita dentro do próprio Node-RED.
 
 1. Baixe o arquivo `.tgz` deste repositório.
 2. No Node-RED, abra o menu (três barras), **Gerenciar paleta**, aba **Instalar**, e envie o arquivo `.tgz` (botão de enviar/upload).
-3. Confirme a instalação. Na paleta aparece o grupo **sonoff neway automacoes**. Se não aparecer, reinicie o Node-RED.
+3. Confirme a instalação. Na paleta aparece o grupo **sonoff-neway-automacoes**. Se não aparecer, reinicie o Node-RED.
 
 ## Conta (feita uma vez)
 
@@ -59,6 +59,7 @@ Um aparelho conta como online se estiver online pela rede local ou pela nuvem.
 | Dispositivo | o aparelho, escolhido numa lista com os aparelhos da conta ("- offline" aparece nos que não estão ativos) |
 | Código | opcional. O ponto de dados do aparelho a usar (por exemplo `switch`, `switch_1`). A lista mostra os códigos do aparelho escolhido. Em "Todos os códigos", o nó trata todos |
 | Emitir ao iniciar | só no tipo Status. Marcado: assim que a conta carrega, o estado atual sai uma vez, sem esperar uma mudança |
+| Comando, Ter saída, Atraso, Passar adiante | só no tipo Comando (explicados abaixo) |
 
 ### Tipo: Status (só saída)
 
@@ -76,15 +77,27 @@ Emite uma mensagem por código que mudou, em tempo real. Com **Emitir ao iniciar
 
 Qualquer mensagem na entrada consulta o aparelho e devolve na saída o valor atual do código escolhido (ou de todos), mantendo as propriedades da mensagem de entrada. Com o aparelho offline, dá erro e nada sai.
 
-### Tipo: Comando (só entrada, sem saída)
+### Tipo: Comando (entrada; saída opcional)
 
-Envia o comando ao aparelho.
+Envia o comando ao aparelho. Por padrão o nó não tem saída.
 
-- **Com um Código escolhido:** `msg.payload` é o valor. `ON`, `true` e `1` ligam; `OFF`, `false` e `0` desligam.
-- **Com o Código em "Todos":** o código vem de `msg.topic` e o valor de `msg.payload`, ou `msg.payload` é um objeto como `{"switch_1": true}`.
-- **Comando bruto:** `msg.zeroconf = {comando: "pulse", dados: {pulse: "on", pulseWidth: 1000}}` envia qualquer comando do protocolo local.
+**Qual valor enviar**
 
-A etiqueta do nó mostra `código=valor` (verde quando verdadeiro), `offline`, `sem chave` (aparelho cifrado sem chave) ou o erro em vermelho.
+- **Campo Comando (valor fixo):** tem um seletor de tipo (texto, número ou booleano). Preenchido, qualquer mensagem na entrada envia esse valor ao Código escolhido, sem precisar de *inject* com payload. Com o Código em "Todos", o código vem de `msg.topic`. Para ligar um relé: Código `switch_1`, Comando booleano `true`, e um *inject* qualquer na entrada.
+- **Campo Comando vazio:** o valor vem da mensagem:
+  - Com um Código escolhido, `msg.payload` é o valor. `ON`, `true` e `1` ligam; `OFF`, `false` e `0` desligam.
+  - Com o Código em "Todos", o código vem de `msg.topic` e o valor de `msg.payload`, ou `msg.payload` é um objeto como `{"switch_1": true}`.
+- **Comando bruto:** `msg.zeroconf = {comando: "pulse", dados: {pulse: "on", pulseWidth: 1000}}` envia qualquer comando do protocolo local e vale mais que o valor fixo.
+
+**Saída e atraso (para encadear nós)**
+
+- **Ter saída:** marque para o nó ganhar uma saída.
+- **Atraso (s):** depois de enviar o comando, o nó espera esse tempo, em segundos.
+- **Passar adiante:** texto ou número que vira o `msg.payload` da mensagem emitida na saída. Vazio, a mensagem original segue sem mudança.
+
+Se o comando falhar, nada sai. Se o nó for reimplantado durante a espera, a espera é cancelada. A etiqueta do nó mostra `código=valor` (verde quando verdadeiro), `offline`, `sem chave` (aparelho cifrado sem chave) ou o erro em vermelho.
+
+**Ligar, esperar e seguir.** Tipo: Comando, Código `switch_1`, Comando booleano `true`, **Ter saída** marcada, Atraso `5`, Passar adiante número `1`. Um *inject* liga o relé, o nó espera 5 segundos e emite `payload` = `1`, que você liga ao próximo nó (por exemplo outro Sonoff em Comando, para desligar depois).
 
 ### Códigos
 
