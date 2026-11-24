@@ -12,9 +12,9 @@ Dependências: `bonjour-service` e `ws` (instaladas junto com o pacote).
 
 Na paleta, no grupo **sonoff-neway-automacoes**, aparece um nó:
 
-- **Sonoff**: lê o estado, consulta e envia comandos a um aparelho.
+- **Neway Sonoff**: lê o estado, consulta e envia comandos a um aparelho.
 
-A conta eWeLink não aparece na paleta, porque é um nó de configuração. Ela é criada de dentro do nó **Sonoff** (campo **Conta**, botão do lápis) e fica listada no menu, em **Configuration nodes**.
+A conta eWeLink não aparece na paleta, porque é um nó de configuração. Ela é criada de dentro do nó **Neway Sonoff** (campo **Conta**, botão do lápis) e fica listada no menu, em **Configuration nodes**.
 
 ## Instalar
 
@@ -26,7 +26,7 @@ A instalação é feita dentro do próprio Node-RED.
 
 ## Conta (feita uma vez)
 
-1. Arraste um nó **Sonoff** para o fluxo, dê duplo clique e, no campo **Conta**, clique no lápis.
+1. Arraste um nó **Neway Sonoff** para o fluxo, dê duplo clique e, no campo **Conta**, clique no lápis.
 2. Preencha:
 
 | Campo | O que é |
@@ -49,7 +49,7 @@ Na conta também há o botão **Atualizar lista** (campo "Nuvem"). Ele refaz o l
 
 Um aparelho conta como online se estiver online pela rede local ou pela nuvem.
 
-## Usar o nó Sonoff
+## Usar o nó Neway Sonoff
 
 | Campo | O que faz |
 |---|---|
@@ -97,7 +97,7 @@ Envia o comando ao aparelho. Por padrão o nó não tem saída.
 
 Se o comando falhar, nada sai. Se o nó for reimplantado durante a espera, a espera é cancelada. A etiqueta do nó mostra `código=valor` (verde quando verdadeiro), `offline`, `sem chave` (aparelho cifrado sem chave) ou o erro em vermelho.
 
-**Ligar, esperar e seguir.** Tipo: Comando, Código `switch_1`, Comando booleano `true`, **Ter saída** marcada, Atraso `5`, Passar adiante número `1`. Um *inject* liga o relé, o nó espera 5 segundos e emite `payload` = `1`, que você liga ao próximo nó (por exemplo outro Sonoff em Comando, para desligar depois).
+**Ligar, esperar e seguir.** Tipo: Comando, Código `switch_1`, Comando booleano `true`, **Ter saída** marcada, Atraso `5`, Passar adiante número `1`. Um *inject* liga o relé, o nó espera 5 segundos e emite `payload` = `1`, que você liga ao próximo nó (por exemplo outro Neway Sonoff em Comando, para desligar depois).
 
 ### Códigos
 
@@ -128,8 +128,8 @@ Baixe o `.tgz` atual e instale do mesmo jeito (Gerenciar paleta, Instalar, envia
 
 Antes de remover o pacote, apague tudo que o usa:
 
-1. Apague **todos os nós Sonoff** de todos os fluxos.
-2. Apague a **conta Sonoff salva**: menu, **Configuration nodes**, escolha a conta e exclua.
+1. Apague **todos os nós Neway Sonoff** de todos os fluxos.
+2. Apague a **conta Neway Sonoff salva**: menu, **Configuration nodes**, escolha a conta e exclua.
 3. Faça o **Deploy**.
 4. Menu, **Gerenciar paleta**, aba **Nós**, ache `sonoff-neway-automacoes` e clique em **Remover**.
 
