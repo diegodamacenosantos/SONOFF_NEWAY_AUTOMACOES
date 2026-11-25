@@ -10,7 +10,7 @@ Dependências: `bonjour-service` e `ws` (instaladas junto com o pacote).
 
 ## O que vem no pacote
 
-Na paleta, no grupo **sonoff-neway-automacoes**, aparece um nó:
+Na paleta, no grupo **Sonoff**, aparece um nó:
 
 - **Sonoff**: lê o estado, consulta e envia comandos a um aparelho.
 
@@ -22,7 +22,7 @@ A instalação é feita dentro do próprio Node-RED.
 
 1. Baixe o arquivo `.tgz` deste repositório.
 2. No Node-RED, abra o menu (três barras), **Gerenciar paleta**, aba **Instalar**, e envie o arquivo `.tgz` (botão de enviar/upload).
-3. Confirme a instalação. Na paleta aparece o grupo **sonoff-neway-automacoes**. Se não aparecer, reinicie o Node-RED.
+3. Confirme a instalação. Na paleta aparece o grupo **Sonoff**. Se não aparecer, reinicie o Node-RED.
 
 ## Conta (feita uma vez)
 
